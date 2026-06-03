@@ -2,13 +2,14 @@
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
-import javax.swing.JApplet;
 import java.awt.*;
 import java.util.*;
 import java.lang.*;
 
 /* This class contains the entire game... most of the game logic is in the Board class but this
    creates the gui and captures mouse and keyboard input, as well as controls the game states */
+
+
 public class Pacman extends JApplet implements MouseListener, KeyListener
 { 
 
@@ -262,18 +263,29 @@ public class Pacman extends JApplet implements MouseListener, KeyListener
   }
 
   /* This function detects user clicks on the menu items on the bottom of the screen */
+ /* This function detects user clicks on the menu items on the bottom of the screen */
   public void mousePressed(MouseEvent e){
-    if (b.titleScreen || b.winScreen || b.overScreen)
-    {
-      /* If we aren't in the game where a menu is showing, ignore clicks */
-      return;
-    }
-
     /* Get coordinates of click */
     int x = e.getX();
     int y = e.getY();
+    
+    /* Check if the click is in the bottom menu area */
     if ( 400 <= y && y <= 460)
     {
+      /* Mode button can be clicked AT ANY TIME, including the title screen! */
+      if (260 <= x && x <= 320)
+      {
+        b.cycleMode();
+        repaint(); // Force the screen to refresh instantly
+        return;
+      }
+      
+      /* For all other menu buttons, ignore them if we are on title/win/over screens */
+      if (b.titleScreen || b.winScreen || b.overScreen)
+      {
+        return;
+      }
+
       if ( 100 <= x && x <= 150)
       {
         /* New game has been clicked */

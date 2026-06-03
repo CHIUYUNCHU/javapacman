@@ -7,10 +7,11 @@ import java.util.*;
 import java.io.*;
 
 
-/* Both Player and Ghost inherit Mover.  Has generic functions relevant to both*/
+
 class Mover
 {
   /* Framecount is used to count animation frames*/
+  
   int frameCount=0;
 
   /* State contains the game map */
@@ -482,6 +483,7 @@ class Ghost extends Mover
     }
     
     /* If that direction is valid, move that way */
+   /* If that direction is valid, move that way */
     switch(direction)
     {
       case 'L':
@@ -502,33 +504,16 @@ class Ghost extends Mover
          break;     
     }
   }
-}
+} 
 
+/* ====================================================================== */
+/* THE CORRECTED BOARD CLASS STARTS HERE                                  */
+/* ====================================================================== */
 
 /*This board class contains the player, ghosts, pellets, and most of the game logic.*/
 public class Board extends JPanel
 {
   /* Initialize the images*/
-  /* For JAR File*/
-  /*
-  Image pacmanImage = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/pacman.jpg"));
-  Image pacmanUpImage = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/pacmanup.jpg")); 
-  Image pacmanDownImage = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/pacmandown.jpg")); 
-  Image pacmanLeftImage = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/pacmanleft.jpg")); 
-  Image pacmanRightImage = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/pacmanright.jpg")); 
-  Image ghost10 = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/ghost10.jpg")); 
-  Image ghost20 = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/ghost20.jpg")); 
-  Image ghost30 = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/ghost30.jpg")); 
-  Image ghost40 = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/ghost40.jpg")); 
-  Image ghost11 = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/ghost11.jpg")); 
-  Image ghost21 = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/ghost21.jpg")); 
-  Image ghost31 = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/ghost31.jpg")); 
-  Image ghost41 = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/ghost41.jpg")); 
-  Image titleScreenImage = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/titleScreen.jpg")); 
-  Image gameOverImage = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/gameOver.jpg")); 
-  Image winScreenImage = Toolkit.getDefaultToolkit().getImage(Pacman.class.getResource("img/winScreen.jpg"));
-  */
-  /* For NOT JAR file*/
   Image pacmanImage = Toolkit.getDefaultToolkit().getImage("img/pacman.jpg"); 
   Image pacmanUpImage = Toolkit.getDefaultToolkit().getImage("img/pacmanup.jpg"); 
   Image pacmanDownImage = Toolkit.getDefaultToolkit().getImage("img/pacmandown.jpg"); 
@@ -596,6 +581,18 @@ public class Board extends JPanel
   /* This is the font used for the menus */
   Font font = new Font("Monospaced",Font.BOLD, 12);
 
+  /* ========================================= */
+  /* NEW MODE VARIABLES GO HERE!               */
+  /* ========================================= */
+  GameMode[] availableModes = { 
+      new CustomModeOne(), 
+      new CustomModeTwo(), 
+      new CustomModeThree() 
+  };
+  int currentModeIndex = 0;
+  /* ========================================= */
+
+
   /* Constructor initializes state flags etc.*/
   public Board() 
   {
@@ -659,6 +656,29 @@ public class Board extends JPanel
     clearHighScores=true;
   }
 
+  /* ========================================= */
+  /* NEW MODE METHODS GO HERE!                 */
+  /* ========================================= */
+  public String getModeName() {
+      return availableModes[currentModeIndex].getModeName();
+  }
+
+  public void cycleMode() {
+      currentModeIndex = (currentModeIndex + 1) % availableModes.length; 
+      applyModeSettings();
+      New = 1;
+  }
+
+  private void applyModeSettings() {
+      GameMode currentMode = availableModes[currentModeIndex];
+      this.demo = currentMode.isDemo();
+      
+      Ghost[] allGhosts = {ghost1, ghost2, ghost3, ghost4};
+      currentMode.applySettings(player, allGhosts); 
+  }
+  /* ========================================= */
+
+
   /* Reset occurs on a new game*/
   public void reset()
   {
@@ -675,6 +695,8 @@ public class Board extends JPanel
         pellets[i][j]=true;
       }
     }
+
+    /* Handle the weird spots with no pellets*/
 
     /* Handle the weird spots with no pellets*/
     for(int i = 5;i<14;i++)
@@ -712,6 +734,8 @@ public class Board extends JPanel
 
   /* Draws the appropriate number of lives on the bottom left of the screen.
      Also draws the menu */
+/* Draws the appropriate number of lives on the bottom left of the screen.
+     Also draws the menu */
   public void drawLives(Graphics g)
   {
     g.setColor(Color.BLACK);
@@ -729,6 +753,10 @@ public class Board extends JPanel
     g.setFont(font);
     g.drawString("Reset",100,max+5+gridSize);
     g.drawString("Clear High Scores",180,max+5+gridSize);
+    
+    /* ADD THIS LINE RIGHT HERE: */
+    g.drawString("Mode: " + getModeName(), 260, max+5+gridSize);
+    
     g.drawString("Exit",350,max+5+gridSize);
   }
   
@@ -927,19 +955,23 @@ public class Board extends JPanel
       return;
     }
 
-    /* If this is the title screen, draw the title screen and return */
+   /* If this is the title screen, draw the title screen and return */
     if (titleScreen)
     {
       g.setColor(Color.BLACK);
       g.fillRect(0,0,600,600);
       g.drawImage(titleScreenImage,0,0,Color.BLACK,null);
 
+      /* ADD THESE THREE LINES HERE to draw the mode at the start: */
+      g.setColor(Color.YELLOW);
+      g.setFont(font);
+      g.drawString("Mode: " + getModeName(), 260, max+5+gridSize);
+
       /* Stop any pacman eating sounds */
       sounds.nomNomStop();
       New = 1;
       return;
-    } 
-
+    }
     /* If this is the win screen, draw the win screen and return */
     else if (winScreen)
     {
