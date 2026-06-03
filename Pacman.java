@@ -25,13 +25,25 @@ public class Pacman extends JApplet implements MouseListener, KeyListener
  
 
   /* This constructor creates the entire game essentially */   
+  /* This constructor creates the entire game essentially */   
   public Pacman()
   {
     b.requestFocus();
 
     /* Create and set up window frame*/
+    /* Create and set up window frame*/
     JFrame f=new JFrame(); 
-    f.setSize(420,460);
+    f.setSize(420, 500);
+
+    /* ========================================================= */
+    /* ADD THESE TWO LINES TO FIX THE WHITE FLICKER              */
+    /* ========================================================= */
+    f.getContentPane().setBackground(Color.BLACK);
+    b.setBackground(Color.BLACK);
+    /* ========================================================= */
+
+    /* Add the board to the frame */
+    f.add(b,BorderLayout.CENTER);
 
     /* Add the board to the frame */
     f.add(b,BorderLayout.CENTER);
@@ -40,9 +52,12 @@ public class Pacman extends JApplet implements MouseListener, KeyListener
     b.addMouseListener(this);  
     b.addKeyListener(this);  
 
-    /* Make frame visible, disable resizing */
+    /* Make frame visible and ENABLE resizing */
     f.setVisible(true);
-    f.setResizable(false);
+    f.setResizable(true);
+    
+    /* Optional: Centers the window on your monitor when the game starts */
+    f.setLocationRelativeTo(null);
 
     /* Set the New flag to 1 because this is a new game */
     b.New=1;
@@ -68,20 +83,18 @@ public class Pacman extends JApplet implements MouseListener, KeyListener
   /* This repaint function repaints only the parts of the screen that may have changed.
      Namely the area around every player ghost and the menu bars
   */
+  /* This repaint function repaints the entire screen to support full-screen scaling 
+     and prevent visual bugs / input lag.
+  */
   public void repaint()
   {
     if (b.player.teleport)
     {
-      b.repaint(b.player.lastX-20,b.player.lastY-20,80,80);
       b.player.teleport=false;
     }
-    b.repaint(0,0,600,20);
-    b.repaint(0,420,600,40);
-    b.repaint(b.player.x-20,b.player.y-20,80,80);
-    b.repaint(b.ghost1.x-20,b.ghost1.y-20,80,80);
-    b.repaint(b.ghost2.x-20,b.ghost2.y-20,80,80);
-    b.repaint(b.ghost3.x-20,b.ghost3.y-20,80,80);
-    b.repaint(b.ghost4.x-20,b.ghost4.y-20,80,80);
+    
+    /* Tell Java to redraw the entire board every frame instead of tiny broken pieces */
+    b.repaint();
   }
 
   /* Steps the screen forward one frame */
@@ -264,19 +277,34 @@ public class Pacman extends JApplet implements MouseListener, KeyListener
 
   /* This function detects user clicks on the menu items on the bottom of the screen */
  /* This function detects user clicks on the menu items on the bottom of the screen */
+  /* This function detects user clicks on the menu items on the bottom of the screen */
   public void mousePressed(MouseEvent e){
-    /* Get coordinates of click */
-    int x = e.getX();
-    int y = e.getY();
     
-    /* Check if the click is in the bottom menu area */
+    /* 1. Calculate how much the window has been stretched */
+    double scaleX = b.getWidth() / 400.0;
+    double scaleY = b.getHeight() / 460.0;
+    
+    /* 2. Adjust the raw mouse coordinates to match the original grid */
+    int x = (int)(e.getX() / scaleX);
+    int y = (int)(e.getY() / scaleY);
+    
+    /* 3. Check if the click is in the bottom menu area */
     if ( 400 <= y && y <= 460)
     {
-      /* Mode button can be clicked AT ANY TIME, including the title screen! */
-      if (260 <= x && x <= 320)
+      /* Mode button can be clicked AT ANY TIME */
+      if (200 <= x && x <= 310) 
       {
         b.cycleMode();
-        repaint(); // Force the screen to refresh instantly
+        repaint(); 
+        return;
+      }
+      if ( 10 <= x && x <= 90)
+      {
+        b.titleScreen = false;
+        b.winScreen = false;
+        b.overScreen = false;
+        b.New = 1;
+        repaint();
         return;
       }
       
@@ -286,19 +314,16 @@ public class Pacman extends JApplet implements MouseListener, KeyListener
         return;
       }
 
-      if ( 100 <= x && x <= 150)
+      /* New Game Hitbox */
+      
+      /* Clear Scores Hitbox */
+      if (100 <= x && x <= 190)
       {
-        /* New game has been clicked */
-        b.New = 1;
-      }
-      else if (180 <= x && x <= 300)
-      {
-        /* Clear high scores has been clicked */
         b.clearHighScores();
       }
-      else if (350 <= x && x <= 420)
+      /* Exit Hitbox */
+      else if (330 <= x && x <= 400)
       {
-        /* Exit has been clicked */
         System.exit(0);
       }
     }

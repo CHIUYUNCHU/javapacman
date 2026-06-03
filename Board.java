@@ -736,30 +736,33 @@ public class Board extends JPanel
      Also draws the menu */
 /* Draws the appropriate number of lives on the bottom left of the screen.
      Also draws the menu */
+ /* Draws the appropriate number of lives on the bottom left of the screen.
+     Also draws the menu */
   public void drawLives(Graphics g)
   {
     g.setColor(Color.BLACK);
 
-    /*Clear the bottom bar*/
-    g.fillRect(0,max+5,600,gridSize);
-    g.setColor(Color.YELLOW);
-    for(int i = 0;i<numLives;i++)
-    {
-      /*Draw each life */
-      g.fillOval(gridSize*(i+1),max+5,gridSize,gridSize);
-    }
-    /* Draw the menu items */
+    /* Clear the entire bottom bar area cleanly up to full height */
+    g.fillRect(0, max + 2, 400, 58);
+    
+    /* Draw the perfectly spaced menu items on the first row */
     g.setColor(Color.YELLOW);
     g.setFont(font);
-    g.drawString("Reset",100,max+5+gridSize);
-    g.drawString("Clear High Scores",180,max+5+gridSize);
     
-    /* ADD THIS LINE RIGHT HERE: */
-    g.drawString("Mode: " + getModeName(), 260, max+5+gridSize);
-    
-    g.drawString("Exit",350,max+5+gridSize);
+    g.drawString("New Game", 10, max + 20);
+    g.drawString("Clear Scores", 95, max + 20);
+    g.drawString("Mode: " + getModeName(), 195, max + 20);
+    g.drawString("Exit", 350, max + 20);
+
+    /* Draw the lives text and icons on a separate row underneath */
+    g.drawString("Lives:", 10, max + 45);
+    g.setColor(Color.YELLOW);
+    for(int i = 0; i < numLives; i++)
+    {
+      /* Draw each life ball next to the "Lives:" label without any overlapping */
+      g.fillOval(60 + (i * 20), max + 33, 14, 14);
+    }
   }
-  
   
   /*  This function draws the board.  The pacman board is really complicated and can only feasibly be done
       manually.  Whenever I draw a wall, I call updateMap to invalidate those coordinates.  This way the pacman
@@ -894,11 +897,39 @@ public class Board extends JPanel
   }
 
   /* This is the main function that draws one entire frame of the game */
+/* This is the main function that draws one entire frame of the game */
+  /* This is the main function that draws one entire frame of the game */
+  /* This is the main function that draws one entire frame of the game */
   public void paint(Graphics g)
   {
+    /* ======================================================== */
+    /* 1. STRETCH AND SMOOTH FULL SCREEN                        */
+    /* ======================================================== */
+    java.awt.Graphics2D g2d = (java.awt.Graphics2D) g;
+    double scaleX = getWidth() / 400.0;
+    double scaleY = getHeight() / 460.0;
+    g2d.scale(scaleX, scaleY);
+    g2d.setRenderingHint(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING, java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+    /* ======================================================== */
+    /* 2. WIPE SCREEN BLACK AND ALWAYS REDRAW MAZE (SAFELY!)    */
+    /* ======================================================== */
+    g.setColor(Color.BLACK);
+    g.fillRect(0, 0, 2000, 2000); 
+    
+    /* ADDED 'state != null' SO IT DOESN'T CRASH ON STARTUP! */
+    if (!titleScreen && !winScreen && !overScreen && state != null) {
+        drawBoard(g);
+        drawPellets(g);
+        drawLives(g);
+    }
+    /* ======================================================== */
+
     /* If we're playing the dying animation, don't update the entire screen.
        Just kill the pacman*/ 
     if (dying > 0)
+// ... the rest of the code continues normally below!
+// ... the rest of your original code continues here!
     {
       /* Stop any pacman eating sounds */
       sounds.nomNomStop();
@@ -909,6 +940,7 @@ public class Board extends JPanel
       
       /* Kill the pacman */
       if (dying == 4)
+// ... the rest of your code continues normally here!
         g.fillRect(player.x,player.y,20,7);
       else if ( dying == 3)
         g.fillRect(player.x,player.y,20,14);
@@ -1050,13 +1082,14 @@ public class Board extends JPanel
       New++;
     }
     /* Third frame of new game */
+    /* Third frame of new game */
     else if (New == 3)
     {
       New++;
       /* Play the newGame sound effect */
       sounds.newGame();
       timer = System.currentTimeMillis();
-      return;
+      /* REMOVED 'return;' SO PACMAN STAYS VISIBLE */
     }
     /* Fourth frame of new game */
     else if (New == 4)
@@ -1067,9 +1100,13 @@ public class Board extends JPanel
       {
         New=0;
       }
-      else
-        return;
+      /* REMOVED 'return;' SO PACMAN STAYS VISIBLE */
     }
+    
+    /* (We deleted the g.copyArea lines here because they crash stretched windows!) */
+
+    /* Detect collisions */
+    if (player.x == ghost1.x && Math.abs(player.y-ghost1.y) < 10)
     
     /* Drawing optimization */
     g.copyArea(player.x-20,player.y-20,80,80,0,0);
@@ -1244,8 +1281,20 @@ public class Board extends JPanel
     }
 
     /* Draw the border around the game in case it was overwritten by ghost movement or something */
+   /* Draw the border around the game in case it was overwritten by ghost movement or something */
     g.setColor(Color.WHITE);
     g.drawRect(19,19,382,382);
+
+    /* ALWAYS draw the top score bar at the end of paint so it never flickers or disappears */
+    g.setColor(Color.BLACK);
+    g.fillRect(0, 0, 400, 18);
+    g.setColor(Color.YELLOW);
+    g.setFont(font);
+    if (demo) {
+      g.drawString("DEMO MODE PRESS ANY KEY TO START A GAME\t High Score: " + highScore, 20, 12);
+    } else {
+      g.drawString("Score: " + currScore + "\t High Score: " + highScore, 20, 12);
+    }
 
   }
 }
