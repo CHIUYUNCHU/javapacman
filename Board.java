@@ -710,7 +710,7 @@ public class Board extends JPanel
     pellets[8][8] = false;
     pellets[9][8] = false;
     pellets[10][8] = false;
-
+    availableModes[currentModeIndex].initMode(this);// used in mode2
   }
 
 
@@ -884,6 +884,7 @@ public class Board extends JPanel
             g.fillOval(i*20+8,j*20+8,4,4);
           }
         }
+        availableModes[currentModeIndex].updateLogic(this, g); // used in mode2 
   }
 
   /* Draws one individual pellet.  Used to redraw pellets that ghosts have run over */
@@ -1099,7 +1100,7 @@ public class Board extends JPanel
       oops=true;
 
     /* Kill the pacman */
-    if (oops && !stopped)
+    if (oops && !stopped && !availableModes[currentModeIndex].isPlayerInvincible())// modified for mode2
     {
       /* 4 frames of death*/
       dying=4;
@@ -1123,6 +1124,7 @@ public class Board extends JPanel
     g.fillRect(ghost2.lastX,ghost2.lastY,20,20);
     g.fillRect(ghost3.lastX,ghost3.lastY,20,20);
     g.fillRect(ghost4.lastX,ghost4.lastY,20,20);
+    availableModes[currentModeIndex].updateLogic(this, g); // used for mode2
 
     /* Eat pellets */
     if ( pellets[player.pelletX][player.pelletY] && New!=2 && New !=3)
@@ -1190,7 +1192,7 @@ public class Board extends JPanel
     if ( pellets[ghost4.lastPelletX][ghost4.lastPelletY])
       fillPellet(ghost4.lastPelletX,ghost4.lastPelletY,g);
 
-
+    availableModes[currentModeIndex].drawMode(g, this); // used for mode2
     /*Draw the ghosts */
     if (ghost1.frameCount < 5)
     {
@@ -1215,31 +1217,39 @@ public class Board extends JPanel
     }
 
     /* Draw the pacman */
-    if (player.frameCount < 5)
-    {
-      /* Draw mouth closed */
-      g.drawImage(pacmanImage,player.x,player.y,Color.BLACK,null);
-    }
-    else
-    {
-      /* Draw mouth open in appropriate direction */
-      if (player.frameCount >=10)
-        player.frameCount=0;
-
-      switch(player.currDirection)
+    Image customPacman = availableModes[currentModeIndex].getCustomPlayerImage(player, player.frameCount);
+    
+    // modified for mode2
+    if (customPacman != null) {
+        g.drawImage(customPacman, player.x, player.y, Color.BLACK, null);
+    } 
+    else {
+      if (player.frameCount < 5)
       {
-        case 'L':
-           g.drawImage(pacmanLeftImage,player.x,player.y,Color.BLACK,null);
-           break;     
-        case 'R':
-           g.drawImage(pacmanRightImage,player.x,player.y,Color.BLACK,null);
-           break;     
-        case 'U':
-           g.drawImage(pacmanUpImage,player.x,player.y,Color.BLACK,null);
-           break;     
-        case 'D':
-           g.drawImage(pacmanDownImage,player.x,player.y,Color.BLACK,null);
-           break;     
+        /* Draw mouth closed */
+        g.drawImage(pacmanImage,player.x,player.y,Color.BLACK,null);
+      }
+      else
+      {
+        /* Draw mouth open in appropriate direction */
+        if (player.frameCount >=10)
+          player.frameCount=0;
+
+        switch(player.currDirection)
+        {
+          case 'L':
+            g.drawImage(pacmanLeftImage,player.x,player.y,Color.BLACK,null);
+            break;     
+          case 'R':
+            g.drawImage(pacmanRightImage,player.x,player.y,Color.BLACK,null);
+            break;     
+          case 'U':
+            g.drawImage(pacmanUpImage,player.x,player.y,Color.BLACK,null);
+            break;     
+          case 'D':
+            g.drawImage(pacmanDownImage,player.x,player.y,Color.BLACK,null);
+            break;     
+        }
       }
     }
 
