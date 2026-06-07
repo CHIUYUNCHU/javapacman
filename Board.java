@@ -60,6 +60,12 @@ if (controller.dying > 0) {
             ui.drawTopScoreBar(g, scoreManager.getCurrScore(), scoreManager.getHighScore(), controller.demo);
         }
         controller.handleTimers(sounds);
+        // Fix: Only apply custom mode settings if we're in that mode, 
+        // to avoid unintended side effects on other modes
+        if (availableModes[currentModeIndex] instanceof CustomModeOne) {
+            availableModes[currentModeIndex].applySettings(entities.player, entities.ghosts);
+        }
+
         controller.checkDeath(entities, sounds);
         controller.processPellets(entities, maze, scoreManager, sounds);
 
