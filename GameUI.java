@@ -49,9 +49,9 @@ public class GameUI
     g.setColor(Color.BLACK);
     g.fillRect(0, 0, 600, 600);
     g.drawImage(titleScreenImage, 0, 0, Color.BLACK, observer);
-    g.setColor(Color.YELLOW);
+    /*g.setColor(Color.YELLOW);
     g.setFont(font);
-    g.drawString("Mode: " + modeName, 260, max + 5 + gridSize);
+    g.drawString("Mode: " + modeName, 260, max + 5 + gridSize);*/
   }
 
   /* Draws the Victory Screen */

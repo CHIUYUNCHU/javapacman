@@ -11,7 +11,7 @@ public class CustomModeOne implements GameMode {
 
     public String getModeName() {
 
-        return "Mode 1"; // 模式名稱
+        return "MODE 1"; // 模式名稱
 
     }
 
