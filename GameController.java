@@ -39,14 +39,22 @@ public class GameController {
         }
     }
 
-    public void checkDeath(EntityManager em, GameSounds sounds) {
+    public void checkDeath(EntityManager em, GameSounds sounds, GameMode currentMode) {
+        // 只要有發生碰撞，且遊戲尚未停止
         if (em.checkCollisions() && !stopped) {
-            dying = GameConstants.DYING_FRAMES;
-            sounds.death();
-            sounds.nomNomStop();
-            numLives--;
-            stopped = true;
-            timer = System.currentTimeMillis();
+            
+            // 只要處於【綠點狀態 (isPlayerInvincible)】或【藍點狀態 (areGhostsFrozen)】
+            if (currentMode.isPlayerInvincible() || currentMode.areGhostsFrozen()) {
+                // 什麼都不做，直接跳過判定，讓玩家與鬼魂安全穿透重疊
+            } else {
+                // 【正常狀態】沒有任何 Buff，玩家死亡
+                dying = GameConstants.DYING_FRAMES;
+                sounds.death();
+                sounds.nomNomStop();
+                numLives--;
+                stopped = true;
+                timer = System.currentTimeMillis();
+            }
         }
     }
 

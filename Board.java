@@ -86,10 +86,21 @@ public class Board extends JPanel {
         /* 3. Logic Updates */
         if (controller.New == 1) {
             controller.initSession(entities, maze, scoreManager);
+            
+            // Initialize mode specific settings (e.g., clear items for CustomModeTwo)
+            availableModes[currentModeIndex].initMode(entities); 
+            
             ui.drawTopScoreBar(g, scoreManager.getCurrScore(), scoreManager.getHighScore(), controller.demo);
         }
         controller.handleTimers(sounds);
-        controller.checkDeath(entities, sounds);
+        
+        // Apply settings and update logic for the current mode
+        availableModes[currentModeIndex].applySettings(entities.player, entities.ghosts);
+        availableModes[currentModeIndex].updateLogic(entities, controller);
+
+        // Pass the current mode into checkDeath to verify invincibility
+        controller.checkDeath(entities, sounds, availableModes[currentModeIndex]);
+        
         controller.processPellets(entities, maze, scoreManager, sounds);
 
         /* 4. Render Active Game */
@@ -97,5 +108,13 @@ public class Board extends JPanel {
             scoreManager.clearHighScoresFlag = false;
         }
         renderer.renderGame(g, entities, maze, scoreManager, controller, getModeName(), this);
+        availableModes[currentModeIndex].drawMode(g);
+        if (availableModes[currentModeIndex].isPlayerInvincible()) {
+            Image greenImg = availableModes[currentModeIndex].getCustomPlayerImage(entities.player, 0);
+            if (greenImg != null) {
+                // 蓋在玩家現在的座標上，大小設為 20x20
+                g.drawImage(greenImg, entities.player.x, entities.player.y, 20, 20, this);
+            }
+        }
     }
 }
