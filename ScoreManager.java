@@ -8,6 +8,8 @@ public class ScoreManager
     private int highScore;
     public boolean clearHighScoresFlag;
 
+    // ==== 新增：用來紀錄當前的模式名稱，預設為 Normal ====
+    private String currentModeName = "Normal";
     public ScoreManager() 
     {
         currScore = 0;
@@ -15,9 +17,18 @@ public class ScoreManager
         loadHighScore();
     }
 
+    // ==== 新增：供 Board 在切換模式時呼叫的方法 ====
+    public void switchMode(String modeName) 
+    {
+        this.currentModeName = modeName;
+        loadHighScore(); // 切換模式後，立刻重新讀取該模式的最高分數
+    }
+
     private void loadHighScore() 
     {
-        File file = new File(GameConstants.HIGH_SCORE_FILE);
+        // ==== 修改：將原本固定的 GameConstants.HIGH_SCORE_FILE 改為動態檔名 ====
+        String fileName = "highScore_" + currentModeName + ".txt";
+        File file = new File(fileName);
         try (Scanner sc = new Scanner(file)) {
             highScore = sc.nextInt();
         } catch(Exception e) {
@@ -40,7 +51,9 @@ public class ScoreManager
 
     private void saveHighScore(int score) 
     {
-        try (PrintWriter out = new PrintWriter(GameConstants.HIGH_SCORE_FILE)) {
+        // ==== 修改：將原本固定的 GameConstants.HIGH_SCORE_FILE 改為動態檔名 ====
+        String fileName = "highScore_" + currentModeName + ".txt";
+        try (PrintWriter out = new PrintWriter(fileName)) {
             out.println(score);
         } catch(Exception e) {}
         clearHighScoresFlag = true;
