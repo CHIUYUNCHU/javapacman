@@ -19,7 +19,10 @@ public class Board extends JPanel {
     };
     int currentModeIndex = 0;
 
-    public Board() {}
+    public Board() {
+        // ==== 新增下面這一行：確保一開局就載入第一個模式的最高紀錄 ====
+        scoreManager.switchMode(getModeName());
+    }
 
     public void clearHighScores() { 
         scoreManager.clearHighScores(); 
@@ -33,6 +36,9 @@ public class Board extends JPanel {
         currentModeIndex = (currentModeIndex + 1) % availableModes.length; 
         controller.demo = availableModes[currentModeIndex].isDemo();
         availableModes[currentModeIndex].applySettings(entities.player, entities.ghosts); 
+        // ==== 新增下面這一行：點擊切換模式時，同步切換分數經理的檔案 ====
+        scoreManager.switchMode(getModeName());
+        
         controller.New = 1;
     }
 
