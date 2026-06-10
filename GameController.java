@@ -1,5 +1,5 @@
 public class GameController {
-    public int numLives = 2;
+    public int numLives = 3;
     public boolean stopped = false;
     public boolean titleScreen = true;
     public boolean winScreen = false;
@@ -24,6 +24,9 @@ public class GameController {
     em.updateState(maze.state);
     sm.resetCurrentScore();
     
+    // 重置生命值為3
+    this.numLives = 3;
+
     /* CRITICAL FIX: Set to 2 to trigger the intro music and start delay sequence */
     this.New = 2; 
 }
@@ -66,8 +69,8 @@ public class GameController {
             dying--;
             timer = currTime;
             if (dying == 0) {
-                if (numLives == -1) {
-                    if (demo) numLives = 2;
+                if (numLives == 0) {
+                    if (demo) numLives = 3;
                     else {
                         sm.checkAndSaveHighScore(demo);
                         overScreen = true;
