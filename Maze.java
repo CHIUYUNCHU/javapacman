@@ -37,6 +37,10 @@ public class Maze
     pellets[9][8] = false;
     pellets[10][8] = false;
 
+    // 清除紅鬼初始位置的 pellet，避免玩家一開始就吃掉它
+    pellets[9][14] = false; 
+    // ================================
+
     /* CRITICAL FIX: Build the invisible collision walls immediately! */
     buildWalls();
   }
