@@ -196,8 +196,8 @@ public class Pacman extends JApplet implements MouseListener, KeyListener
       b.entities.ghosts[3].x = 220;
       b.entities.ghosts[3].y = 180;
 
-      /* Advance a frame to display main state*/
-      b.repaint(0,0,600,600);
+      // full reset of the board state, including pellets and mode-specific variables
+      repaint();
 
       /*Start advancing frames once again*/
       b.controller.stopped = false;
@@ -217,6 +217,8 @@ public class Pacman extends JApplet implements MouseListener, KeyListener
     if (b.controller.titleScreen)
     {
       b.controller.titleScreen = false;
+      // ==== 補上下面這一行：通知系統這是一場全新的遊戲 ====
+      b.controller.New = 1;
       return;
     }
     /* Pressing a key in the win screen or game over screen goes to the title screen */
