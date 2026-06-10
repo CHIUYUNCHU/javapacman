@@ -3,7 +3,7 @@ public class GameConstants
     /* Board Dimensions */
     public static final int BOARD_SIZE = 400;
     public static final int GRID_SIZE = 20;
-    public static final int MAX_PELLETS = 173;
+    public static final int MAX_PELLETS = 172;
     public static final int PELLET_SCORE = 50;
 
     /* Timers */
