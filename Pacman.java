@@ -175,11 +175,11 @@ public class Pacman extends JApplet implements MouseListener, KeyListener
       frameTimer.stop();
 
       /* If user is dying ... */
-      while (b.controller.dying > 0)
+      /*while (b.controller.dying > 0)
       {
         /* Play dying animation. */
-        stepFrame(false);
-      }
+        //stepFrame(false);
+      //}
 
       /* Move all game elements back to starting positions and orientations */
       b.entities.player.currDirection='L';
