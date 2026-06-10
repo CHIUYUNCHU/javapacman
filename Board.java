@@ -10,14 +10,24 @@ public class Board extends JPanel {
     public GameUI ui = new GameUI();
     public Renderer renderer = new Renderer(ui);
 
-    GameMode[] availableModes = { new CustomModeOne(), new CustomModeTwo(), new CustomModeThree() };
+    // MODE 0 is now set to Normal Mode
+    GameMode[] availableModes = { 
+        new NormalMode(), 
+        new CustomModeOne(), 
+        new CustomModeTwo(), 
+        new CustomModeThree() 
+    };
     int currentModeIndex = 0;
 
     public Board() {}
 
-    public void clearHighScores() { scoreManager.clearHighScores(); }
+    public void clearHighScores() { 
+        scoreManager.clearHighScores(); 
+    }
     
-    public String getModeName() { return availableModes[currentModeIndex].getModeName(); }
+    public String getModeName() { 
+        return availableModes[currentModeIndex].getModeName(); 
+    }
 
     public void cycleMode() {
         currentModeIndex = (currentModeIndex + 1) % availableModes.length; 
@@ -26,6 +36,7 @@ public class Board extends JPanel {
         controller.New = 1;
     }
 
+    @Override
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.scale(getWidth() / 400.0, getHeight() / 460.0);
@@ -35,24 +46,42 @@ public class Board extends JPanel {
         g.fillRect(0, 0, 2000, 2000); 
 
         /* 1. Render Overlays */
-        if (controller.titleScreen) { ui.drawTitleScreen(g, getModeName(), GameConstants.BOARD_SIZE, GameConstants.GRID_SIZE, this); sounds.nomNomStop(); return; }
-        if (controller.winScreen)   { ui.drawWinScreen(g, this); sounds.nomNomStop(); return; }
-        if (controller.overScreen)  { ui.drawGameOverScreen(g, this); sounds.nomNomStop(); return; }
+        if (controller.titleScreen) { 
+            ui.drawTitleScreen(g, getModeName(), GameConstants.BOARD_SIZE, GameConstants.GRID_SIZE, this); 
+            sounds.nomNomStop(); 
+            return; 
+        }
+        if (controller.winScreen) { 
+            ui.drawWinScreen(g, this); 
+            sounds.nomNomStop(); 
+            return; 
+        }
+        if (controller.overScreen) { 
+            ui.drawGameOverScreen(g, this); 
+            sounds.nomNomStop(); 
+            return; 
+        }
+         if (availableModes[currentModeIndex] instanceof CustomModeOne) {
+
+
+            availableModes[currentModeIndex].applySettings(entities.player, entities.ghosts);
+
+
+        }
 
         /* 2. Process Death Sequence */
-        /* 2. Process Death Sequence */
-if (controller.dying > 0) {
-    sounds.nomNomStop();
-    
-    /* CRITICAL FIX: Draw the background maze elements so it isn't an empty black screen! */
-    maze.drawBoard(g);
-    maze.drawPellets(g);
-    ui.drawBottomMenu(g, GameConstants.BOARD_SIZE, controller.numLives, getModeName());
-    
-    renderer.renderDeathSequence(g, entities, controller.dying);
-    controller.processDeathSequence(scoreManager);
-    return;
-}
+        if (controller.dying > 0) {
+            sounds.nomNomStop();
+            
+            /* CRITICAL FIX: Draw the background maze elements so it isn't an empty black screen! */
+            maze.drawBoard(g);
+            maze.drawPellets(g);
+            ui.drawBottomMenu(g, GameConstants.BOARD_SIZE, controller.numLives, getModeName());
+            
+            renderer.renderDeathSequence(g, entities, controller.dying);
+            controller.processDeathSequence(scoreManager);
+            return;
+        }
 
         /* 3. Logic Updates */
         if (controller.New == 1) {
@@ -64,7 +93,9 @@ if (controller.dying > 0) {
         controller.processPellets(entities, maze, scoreManager, sounds);
 
         /* 4. Render Active Game */
-        if (scoreManager.clearHighScoresFlag) scoreManager.clearHighScoresFlag = false;
+        if (scoreManager.clearHighScoresFlag) {
+            scoreManager.clearHighScoresFlag = false;
+        }
         renderer.renderGame(g, entities, maze, scoreManager, controller, getModeName(), this);
     }
 }
