@@ -184,7 +184,8 @@ public class CustomModeThree implements GameMode {
                     protected void paintComponent(Graphics g) {
                         super.paintComponent(g);
                         if (!"MODE 3".equals(board.getModeName())) return;
-                        if (board.controller.titleScreen) return;
+                        // Modify: Don't draw the HUD if we're on a non-interactive screen
+                        if (board.controller.titleScreen || board.controller.winScreen || board.controller.overScreen) return;
 
                         Graphics2D g2d = (Graphics2D) g;
                         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
