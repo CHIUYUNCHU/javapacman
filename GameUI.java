@@ -37,7 +37,7 @@ public class GameUI
     g.setColor(Color.YELLOW);
     g.setFont(font);
     if (demo) {
-      g.drawString("DEMO MODE PRESS ANY KEY TO START A GAME\t High Score: " + highScore, 20, 12);
+      g.drawString("DEMO MODE PRESS ANY KEY TO START A GAME" , 20, 12);
     } else {
       g.drawString("Score: " + currScore + "\t High Score: " + highScore, 20, 12);
     }
