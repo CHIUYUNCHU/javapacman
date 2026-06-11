@@ -439,17 +439,17 @@ public class CustomModeThree implements GameMode {
         btn.setBorder(new LineBorder(primaryColor, 1));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
+        // 【關鍵】：永遠保持透明，讓底層面板的深藍色自然透出
+        btn.setOpaque(false);
+
         btn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 btn.setBorder(new LineBorder(primaryColor, 2));
-                btn.setOpaque(true);
-                btn.setBackground(new Color(primaryColor.getRed(), primaryColor.getGreen(), primaryColor.getBlue(), 30));
             }
             @Override
             public void mouseExited(MouseEvent e) {
                 btn.setBorder(new LineBorder(primaryColor, 1));
-                btn.setOpaque(false);
             }
         });
     }
