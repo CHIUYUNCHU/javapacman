@@ -70,8 +70,10 @@ public class GameController {
             timer = currTime;
             if (dying == 0) {
                 if (numLives == 0) {
-                    if (demo) numLives = 3;
-                    else {
+                    if (demo) {
+                        numLives = 3;
+                        this.New = 1; // 重置地圖
+                    } else {
                         sm.checkAndSaveHighScore(demo);
                         overScreen = true;
                     }
